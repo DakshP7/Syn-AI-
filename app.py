@@ -30,6 +30,28 @@ Always end with: "I am not a doctor. Please consult a healthcare professional or
 st.set_page_config(page_title="SYN Health Checker", page_icon="🏥", layout="centered")
 st.markdown("""
 <style>
+/* Remove white background from input box */
+[data-testid="stChatInput"] {
+    background-color: transparent !important;
+}
+
+/* Style the actual input */
+[data-testid="stChatInput"] textarea {
+    background-color: transparent !important;
+    color: inherit !important;
+    border: 1px solid #ccc !important;
+    border-radius: 10px !important;
+}
+
+/* Remove extra padding/box feel */
+[data-testid="stChatInputContainer"] {
+    background-color: transparent !important;
+    border-top: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+st.markdown("""
+<style>
 /* Background */
 body {
     background-color: #f5f7fb;
