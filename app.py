@@ -82,4 +82,54 @@ st.markdown("""
 # 4. Sidebar / Header UI
 with st.sidebar:
     st.title("Settings")
-    lang =
+    lang = st.radio("Select Language", ["English", "Hindi"])
+    if st.button("Clear Conversation"):
+        st.session_state.messages = []
+        st.rerun()
+
+st.title("SYN Health Symptom Checker")
+st.caption("Describe your symptoms for basic guidance. Not a substitute for a doctor.")
+
+st.warning("⚠️ This tool is for informational purposes only. Always consult a real doctor or dial 112 in emergencies.")
+
+# 5. Chat Logic
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat history
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# User Input
+user_input = st.chat_input("Describe your symptoms (e.g., 'I have a headache and fever')")
+
+if user_input:
+    # Construct the internal prompt with language context
+    full_prompt = f"Language: {lang}\nSymptoms: {user_input}"
+
+    # Display user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+    # Generate and display assistant response
+    with st.chat_message("assistant"):
+        with st.spinner("Analyzing symptoms..."):
+            try:
+                response = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        *st.session_state.messages
+                    ]
+                )
+                reply = response.choices[0].message.content
+                st.markdown(reply)
+                st.session_state.messages.append({"role": "assistant", "content": reply})
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+# 6. Footer
+st.divider()
+st.caption("SYN | Built by a student developer | Not a medical device")
